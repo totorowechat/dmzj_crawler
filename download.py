@@ -1,31 +1,15 @@
 import os
 import requests
-from selenium import webdriver
+from utils import mkdir
+
 headers = {
     'referer': 'https://manhua.dmzj.com'
 }
 
-def mkdir(path):
-    '''
-    防止目录存在
-    '''
-    if not os.path.exists(path):
-        os.mkdir(path)
-
-def get_url_from_cli():
-    '''
-    get manga's url
-    '''
-    print()
-    url = None
-    while not url:
-
-        # todo - check url validation
-        url = input('Index page url of target comic: ')
-    print() 
-    return url
-
-
+def download_sync(image_urls, dirname):
+    mkdir(dirname)
+    for image_url in image_urls:
+        
 def SavePic(filename, url):
     '''
     通过requests库
@@ -37,22 +21,6 @@ def SavePic(filename, url):
     # content = requests.get(url).content
     with open(filename, 'wb') as f:
         f.write(content)
-
-def SavePic_sel(url):
-    '''
-    通过selenium download manga
-    '''
-    browser = webdriver.Chrome()
-    browser.get(url)
-    browser.implicitly_wait(3)
-
-    print(browser.title.split('-')[0])
-
-    
-    print(pic_url)
-    pageNum = len(browser.find_elements_by_tag_name('option'))
-
-    browser.quit()
 
 def main():
     # SavePic_sel('https://manhua.dmzj.com/heishihuidcnlnr/15180.shtml')

@@ -1,5 +1,19 @@
 import os
 
+def get_url_from_cli():
+    '''
+    get manga's location
+    '''
+    print()
+    url = None
+    while not url:
+
+        # todo - check url validation
+        url = input('Index location of target comic: ')
+    print() 
+    return url
+
+
 def zipPack(save_path, comic_path):
     files = [f for f in os.listdir(comic_path)]
 
@@ -14,8 +28,9 @@ def list_dir(path):
     for f in files:
         print(f)
 def main():
-    comic_path = './黑社会的超能力女儿'
-    save_path = './test'
+
+    comic_path = get_url_from_cli() 
+    save_path = comic_path + '_'
     zipPack(save_path, comic_path)
     # list_dir(comic_path)
 if __name__ == '__main__':
