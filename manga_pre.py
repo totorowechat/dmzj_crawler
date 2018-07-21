@@ -1,6 +1,6 @@
 import os
 import requests
-from selenium import webdriver
+# from selenium import webdriver
 headers = {
     'referer': 'https://manhua.dmzj.com'
 }
