@@ -2,25 +2,31 @@
 """
     download 
 """
-from .utils import decode_packed_codes, mkdir, download_image,get_url_from_cli
+from .utils import decode_packed_codes, mkdir, download_image,get_url_from_cli, \
+    config_parser, integrity_check, lack_print
 
 import requests
 import bs4
 import re
 import urllib
 import json
+import os
 
 
 class dmzj_crawler(object):
     """
     download manga in dmzj
     """
-    def __init__(self, url, config=None):
+
+    def __init__(self, url, config_path='./_config.yml'):
+        # print(os.environ.get)
+        self.config = config_parser(config_path)
         self.url = url
-        self.config = config
-        self.url_list = []
-        self.chapter_titles = []
         self.title = ''
+        self.chapters = {}
+
+    def config_check(self):
+        pass
 
     def get_comic_chapters_url(self):
         '''
@@ -31,36 +37,38 @@ class dmzj_crawler(object):
         soup = bs4.BeautifulSoup(resp.text, 'lxml')
         self.title = soup.title.string.split('-')[0]
 
-        # mkdir(cpath + title)
+        # mkdir(self.config['path'] + title)
 
         comics_lists = soup.find('div', 'cartoon_online_border').find_all('a')
 
         for part in comics_lists:
-            self.chapter_titles.append(part.string)
-            self.url_list.append(part['href'])
+            self.chapters[part.string] = part['href']
 
-        print('The number of chapters: ' + str(len(self.url_list)))
+        print('The number of chapters: ' + str(len(self.chapters)))
 
-
-    def get_images_s(self, cpath='./'):
+    def get_images_s(self):
         '''
         download image synchornize 
         '''
+        if (self.config['path'] == None):
+            self.config['path'] = './'
+        mkdir(self.config['path'] + self.title)
 
-        mkdir(cpath + self.title)
-
-        basedir = cpath + self.title
+        basedir = self.config['path'] + self.title
         base_url = 'https://manhua.dmzj.com'
 
         # current chapter
-        c_chapter = 0
-        for url in self.url_list:
+        if self.config['mode'] == 'update':
+            chapters = integrity_check(basedir, self.chapters)
+            chapters = lack_print(chapters)
+
+
+        for chapter in chapters:
             manga_page = 0
 
-            resp = requests.get(base_url + url)
+            resp = requests.get(base_url + self.chapters[chapter])
 
-
-            # thanks for dev-techmoe https://github.com/dev-techmoe/python-dcdownloader 
+            # thanks for dev-techmoe https://github.com/dev-techmoe/python-dcdownloader
             # help me with the decode
 
             # title = re.search(r'<title>.+</title>', resp.text).group()[7:-8].split('-')[0]
@@ -71,10 +79,8 @@ class dmzj_crawler(object):
             image_list = urllib.parse.unquote(image_list).replace('\\', '')
             image_list = json.loads(image_list)
             # # 创建章节目录
-            dirname = basedir + '/' + self.chapter_titles[c_chapter]
+            dirname = basedir + '/' + chapter
             mkdir(dirname)
-
-            c_chapter += 1
 
             print('dirname: {}'.format(dirname))
 
@@ -86,5 +92,3 @@ class dmzj_crawler(object):
                 download_image(filename, pic_url)
                 # print(basedir + str(manga_page) + 'Pic saved')
                 manga_page += 1
-
-            break

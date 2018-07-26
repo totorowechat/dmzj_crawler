@@ -1,2 +1,5 @@
 __pycache__/
 python-dcdownloader/
+dmzj_crawler/__pycache__
+.vscode
+tests/test.py

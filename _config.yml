@@ -1,0 +1,21 @@
+# download configration
+
+# default is current folder
+path: /home/lingao/Pictures/
+
+# you can have two mode 1. update 2. download 
+# update is download all chapters and download need you to choose specific chapters
+mode: update
+# mode: download
+
+## two methods 1. sync 2. async, now only sync method support
+method: sync
+
+## two download ways 1. single process 2. multiple processes
+# way: single
+
+## zip or not?
+# zip: false
+
+
+
